@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Employees - Employee Management System{% endblock %}
+
+{% block content %}
+<div class="px-4 sm:px-0">
+    <!-- Header -->
+    <div class="sm:flex sm:items-center sm:justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Manage Employees</h1>
+            <p class="mt-2 text-gray-600">View, edit, and manage all employee records.</p>
+        </div>
+        <div class="mt-4 sm:mt-0">
+            <a href="{{ url_for('add_employee') }}" 
+               class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                <i class="fas fa-plus mr-2"></i>Add Employee
+            </a>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="bg-white shadow rounded-lg p-6 mb-8">
+        <form method="GET" class="space-y-4 sm:space-y-0 sm:flex sm:items-end sm:space-x-4">
+            <div class="flex-1">
+                <label for="search" class="block text-sm font-medium text-gray-700">Search Employees</label>
+                <input type="text" id="search" name="search" value="{{ search }}" 
+                       placeholder="Search by name, username, or email..."
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+            </div>
+            <div class="sm:w-48">
+                <label for="department" class="block text-sm font-medium text-gray-700">Department</label>
+                <select id="department" name="department" 
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                    <option value="">All Departments</option>
+                    {% for dept in departments %}
+                        <option value="{{ dept }}" {% if dept == department_filter %}selected{% endif %}>{{ dept }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="flex space-x-3">
+                <button type="submit" 
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                    <i class="fas fa-search mr-2"></i>Search
+                </button>
+                <a href="{{ url_for('manage_employees') }}" 
+                   class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                    <i class="fas fa-times mr-2"></i>Clear
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Employees Table -->
+    {% if employees %}
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="px-4 py-5 sm:p-6">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Employee
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Contact
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Department & Position
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Hire Date
+                            </th>
+                            <th scope="col" class="relative px-6 py-3">
+                                <span class="sr-only">Actions</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for employee in employees %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="h-10 w-10 flex-shrink-0">
+                                        <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                                            <i class="fas fa-user text-gray-600"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">{{ employee.get_full_name() }}</div>
+                                        <div class="text-sm text-gray-500">@{{ employee.username }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">{{ employee.email }}</div>
+                                <div class="text-sm text-gray-500">{{ employee.phone or 'No phone' }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">{{ employee.department or 'No department' }}</div>
+                                <div class="text-sm text-gray-500">{{ employee.position or 'No position' }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if employee.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                    {% if employee.is_active %}Active{% else %}Inactive{% endif %}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ employee.hire_date.strftime('%m/%d/%Y') if employee.hire_date else 'N/A' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div class="flex items-center space-x-3">
+                                    <a href="{{ url_for('edit_employee', employee_id=employee.id) }}" 
+                                       class="text-primary-600 hover:text-primary-900 transition-colors">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <button onclick="confirmDelete({{ employee.id }}, '{{ employee.get_full_name() }}')" 
+                                            class="text-red-600 hover:text-red-900 transition-colors">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-12 text-center">
+            <i class="fas fa-users text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No employees found</h3>
+            <p class="text-gray-500 mb-6">
+                {% if search or department_filter %}
+                    No employees match your search criteria. Try adjusting your filters.
+                {% else %}
+                    Get started by adding your first employee to the system.
+                {% endif %}
+            </p>
+            <a href="{{ url_for('add_employee') }}" 
+               class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                <i class="fas fa-plus mr-2"></i>Add Employee
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                    <i class="fas fa-exclamation-triangle text-red-600"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mt-4">Delete Employee</h3>
+                <div class="mt-2 px-7 py-3">
+                    <p class="text-sm text-gray-500" id="deleteMessage">
+                        Are you sure you want to delete this employee? This action cannot be undone.
+                    </p>
+                </div>
+                <div class="flex justify-center space-x-3 mt-4">
+                    <button onclick="hideDeleteModal()"
+                            class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                        Cancel
+                    </button>
+                    <form id="deleteForm" method="POST" class="inline">
+                        <button type="submit"
+                                class="px-4 py-2 bg-red-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-red-700 transition-colors">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(employeeId, employeeName) {
+    document.getElementById('deleteMessage').textContent = 
+        `Are you sure you want to delete ${employeeName}? This action cannot be undone.`;
+    document.getElementById('deleteForm').action = 
+        `{{ url_for('delete_employee', employee_id=0) }}`.replace('0', employeeId);
+    document.getElementById('deleteModal').classList.remove('hidden');
+}
+
+function hideDeleteModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
+}
+</script>
+{% endblock %}

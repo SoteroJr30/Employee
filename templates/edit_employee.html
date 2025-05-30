@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Employee - Employee Management System{% endblock %}
+
+{% block content %}
+<div class="px-4 sm:px-0">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Edit Employee</h1>
+                <p class="mt-2 text-gray-600">Update {{ employee.get_full_name() }}'s information.</p>
+            </div>
+            <a href="{{ url_for('manage_employees') }}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Employees
+            </a>
+        </div>
+    </div>
+
+    <!-- Edit Employee Form -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <form method="POST" class="space-y-6">
+                <!-- Basic Information -->
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <div>
+                            <label for="first_name" class="block text-sm font-medium text-gray-700">First Name *</label>
+                            <input type="text" id="first_name" name="first_name" value="{{ employee.first_name }}" required 
+                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                        </div>
+
+                        <div>
+                            <label for="last_name" class="block text-sm font-medium text-gray-700">Last Name *</label>
+                            <input type="text" id="last_name" name="last_name" value="{{ employee.last_name }}" required 
+                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                        </div>
+
+                        <div>
+                            <label for="username" class="block text-sm font-medium text-gray-700">Username *</label>
+                            <input type="text" id="username" name="username" value="{{ employee.username }}" required 
+                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                        </div>
+
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700">Email Address *</label>
+                            <input type="email" id="email" name="email" value="{{ employee.email }}" required 
+                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                        </div>
+
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" value="{{ employee.phone or '' }}" 
+                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                        </div>
+
+                        <div>
+                            <label for="new_password" class="block text-sm font-medium text-gray-700">New Password</label>
+                            <input type="password" id="new_password" name="new_password" 
+                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                   placeholder="Leave blank to keep current password">
+                            <p class="mt-1 text-xs text-gray-500">Leave blank to keep current password</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employment Information -->
+                <div class="border-t border-gray-200 pt-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Employment Information</h3>
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <div>
+                            <label for="department" class="block text-sm font-medium text-gray-700">Department</label>
+                            <input type="text" id="department" name="department" value="{{ employee.department or '' }}" 
+                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                        </div>
+
+                        <div>
+                            <label for="position" class="block text-sm font-medium text-gray-700">Position</label>
+                            <input type="text" id="position" name="position" value="{{ employee.position or '' }}" 
+                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                        </div>
+
+                        <div>
+                            <label for="salary" class="block text-sm font-medium text-gray-700">Salary</label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">$</span>
+                                </div>
+                                <input type="number" id="salary" name="salary" step="0.01" min="0" 
+                                       value="{{ employee.salary or '' }}"
+                                       class="block w-full pl-7 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Account Status</label>
+                            <div class="mt-2">
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" name="is_active" {% if employee.is_active %}checked{% endif %}
+                                           class="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50">
+                                    <span class="ml-2 text-sm text-gray-900">Active Employee</span>
+                                </label>
+                                <p class="mt-1 text-xs text-gray-500">Uncheck to deactivate the employee account</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
+                        <textarea id="address" name="address" rows="3" 
+                                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">{{ employee.address or '' }}</textarea>
+                    </div>
+                </div>
+
+                <!-- Account Information (Read-only) -->
+                <div class="border-t border-gray-200 pt-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Account Information</h3>
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Employee ID</label>
+                            <div class="mt-1 text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md">{{ employee.id }}</div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Hire Date</label>
+                            <div class="mt-1 text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
+                                {{ employee.hire_date.strftime('%B %d, %Y') if employee.hire_date else 'Not set' }}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Last Updated</label>
+                            <div class="mt-1 text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
+                                {{ employee.updated_at.strftime('%B %d, %Y at %I:%M %p') if employee.updated_at else 'Never' }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="border-t border-gray-200 pt-6">
+                    <div class="flex justify-end space-x-3">
+                        <a href="{{ url_for('manage_employees') }}" 
+                           class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                            Cancel
+                        </a>
+                        <button type="submit" 
+                                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                            <i class="fas fa-save mr-2"></i>Update Employee
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Employee Actions -->
+    <div class="mt-6 bg-red-50 border border-red-200 rounded-lg p-4">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <i class="fas fa-exclamation-triangle text-red-400"></i>
+            </div>
+            <div class="ml-3 flex-1">
+                <h3 class="text-sm font-medium text-red-800">Danger Zone</h3>
+                <div class="mt-2 text-sm text-red-700">
+                    <p>Once you delete an employee, there is no going back. Please be certain.</p>
+                </div>
+                <div class="mt-4">
+                    <button onclick="confirmDelete()" 
+                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                        <i class="fas fa-trash mr-2"></i>Delete Employee
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                    <i class="fas fa-exclamation-triangle text-red-600"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mt-4">Delete Employee</h3>
+                <div class="mt-2 px-7 py-3">
+                    <p class="text-sm text-gray-500">
+                        Are you sure you want to delete {{ employee.get_full_name() }}? This action cannot be undone.
+                    </p>
+                </div>
+                <div class="flex justify-center space-x-3 mt-4">
+                    <button onclick="hideDeleteModal()"
+                            class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                        Cancel
+                    </button>
+                    <form method="POST" action="{{ url_for('delete_employee', employee_id=employee.id) }}" class="inline">
+                        <button type="submit"
+                                class="px-4 py-2 bg-red-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-red-700 transition-colors">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete() {
+    document.getElementById('deleteModal').classList.remove('hidden');
+}
+
+function hideDeleteModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
+}
+</script>
+{% endblock %}
